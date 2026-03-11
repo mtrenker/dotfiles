@@ -64,4 +64,22 @@ nix run nixpkgs#home-manager -- switch \
   --extra-experimental-features "nix-command flakes" \
   -b backup
 
-ok "Done! Open a new terminal (or run: exec fish) to enjoy your new environment."
+# ── 5. Set fish as the default shell ─────────────────────────────────────────
+FISH_BIN="$HOME/.nix-profile/bin/fish"
+if [[ -x "$FISH_BIN" ]]; then
+  if ! grep -qF "$FISH_BIN" /etc/shells; then
+    info "Adding $FISH_BIN to /etc/shells…"
+    echo "$FISH_BIN" | sudo tee -a /etc/shells >/dev/null
+  fi
+  if [[ "$SHELL" != "$FISH_BIN" ]]; then
+    info "Setting default shell to fish…"
+    sudo chsh -s "$FISH_BIN" "$USER"
+    ok "Default shell set to fish — open a new terminal to start using it"
+  else
+    ok "fish is already the default shell"
+  fi
+else
+  die "fish binary not found at $FISH_BIN — home-manager switch may have failed"
+fi
+
+ok "Done!"
