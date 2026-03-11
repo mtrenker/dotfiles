@@ -16,14 +16,14 @@ die()   { printf '\033[1;31m[err ]\033[0m  %s\n' "$*" >&2; exit 1; }
 
 [[ -n "$HOST" ]] || die "Usage: bash bootstrap.sh <hostname>  (e.g. work | home)"
 
-# ── Cache sudo credentials upfront (all sudo calls happen later) ─────────────
-sudo -v < /dev/tty
-
 # ── 1. Install Nix (Determinate Systems installer) ────────────────────────────
 if [[ ! -d /nix ]]; then
   info "Installing Nix via Determinate Systems installer…"
-  curl --proto '=https' --tlsv1.2 -sSfL https://install.determinate.systems/nix \
-    | sudo sh -s -- install --no-confirm
+  NIX_INSTALLER=$(mktemp)
+  curl --proto '=https' --tlsv1.2 -sSfL https://install.determinate.systems/nix -o "$NIX_INSTALLER"
+  chmod +x "$NIX_INSTALLER"
+  sudo "$NIX_INSTALLER" install --no-confirm
+  rm -f "$NIX_INSTALLER"
   [[ -d /nix ]] || die "Nix install failed — /nix was not created."
   ok "Nix installed"
 fi
