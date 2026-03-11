@@ -70,19 +70,13 @@ nix run nixpkgs#home-manager -- switch \
 # ── 5. Set fish as the default shell ─────────────────────────────────────────
 FISH_BIN="$HOME/.nix-profile/bin/fish"
 if [[ -x "$FISH_BIN" ]]; then
-  if ! grep -qF "$FISH_BIN" /etc/shells; then
-    info "Adding $FISH_BIN to /etc/shells…"
-    echo "$FISH_BIN" | sudo tee -a /etc/shells >/dev/null
-  fi
-  if [[ "$SHELL" != "$FISH_BIN" ]]; then
-    info "Setting default shell to fish…"
-    sudo chsh -s "$FISH_BIN" "$USER"
-    ok "Default shell set to fish — open a new terminal to start using it"
+  if ! grep -qF "$FISH_BIN" /etc/shells 2>/dev/null; then
+    printf '\n\033[1;33m[next]\033[0m  Run these once to set fish as your default shell:\n'
+    printf '        echo %s | sudo tee -a /etc/shells\n' "$FISH_BIN"
+    printf '        chsh -s %s\n\n' "$FISH_BIN"
   else
-    ok "fish is already the default shell"
+    ok "fish is already registered in /etc/shells"
   fi
-else
-  die "fish binary not found at $FISH_BIN — home-manager switch may have failed"
 fi
 
-ok "Done!"
+ok "Done! Run 'exec fish' to switch now, or open a new terminal."
