@@ -113,12 +113,7 @@
       {
         plugin = nvim-treesitter.withAllGrammars;
         type   = "lua";
-        config = ''
-          require("nvim-treesitter.configs").setup({
-            highlight    = { enable = true },
-            indent       = { enable = true },
-          })
-        '';
+        config = ''require("nvim-treesitter").setup()'';
       }
 
       # Auto-pairs
