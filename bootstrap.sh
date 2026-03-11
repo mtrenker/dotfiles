@@ -17,7 +17,7 @@ die()   { printf '\033[1;31m[err ]\033[0m  %s\n' "$*" >&2; exit 1; }
 [[ -n "$HOST" ]] || die "Usage: bash bootstrap.sh <hostname>  (e.g. work | home)"
 
 # ── Cache sudo credentials upfront (all sudo calls happen later) ─────────────
-sudo -v
+sudo -v < /dev/tty
 
 # ── 1. Install Nix (Determinate Systems installer) ────────────────────────────
 if [[ ! -d /nix ]]; then
