@@ -4,7 +4,7 @@
 
 {
   imports = [
-    ./programs/fish.nix
+    ./programs/bash.nix
     ./programs/git.nix
     ./programs/neovim.nix
     ./programs/packages.nix

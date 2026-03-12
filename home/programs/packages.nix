@@ -7,9 +7,6 @@
     eza          # better ls
     fd           # better find
     ripgrep      # better grep
-    fzf          # fuzzy finder
-    zoxide       # smarter cd (use with `z` command)
-    starship     # cross-shell prompt
 
     # ── File / archive ───────────────────────────────────────────────────
     unzip
@@ -34,7 +31,6 @@
     gh           # GitHub CLI
     git-lfs
     lazygit      # TUI git client
-    direnv       # per-directory env vars
     nixpkgs-fmt  # Nix formatter
 
     # ── Misc ─────────────────────────────────────────────────────────────
@@ -42,30 +38,4 @@
     tldr         # quick man pages
     tokei        # code statistics
   ];
-
-  # zoxide — smarter `cd`
-  programs.zoxide = {
-    enable            = true;
-    enableFishIntegration = true;
-  };
-
-  # starship prompt
-  programs.starship = {
-    enable            = true;
-    enableFishIntegration = true;
-    settings = {
-      add_newline = true;
-      character = {
-        success_symbol = "[❯](bold green)";
-        error_symbol   = "[❯](bold red)";
-      };
-      nix_shell.disabled = false;
-    };
-  };
-
-  # direnv — auto-load .envrc / shell.nix / flake.nix
-  programs.direnv = {
-    enable            = true;
-    nix-direnv.enable = true;
-  };
 }
