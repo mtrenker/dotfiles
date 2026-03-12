@@ -22,8 +22,8 @@
       gl     = "git log --oneline --graph --decorate";
       gp     = "git push";
       gs     = "git status -sb";
-      hms    = "home-manager switch --flake ~/.dotfiles";
-      hme    = "\${EDITOR} ~/.dotfiles";
+      hms    = "home-manager switch --flake ~/dotfiles -b backup";
+      hme    = "\${EDITOR} ~/dotfiles";
     };
 
     initExtra = ''

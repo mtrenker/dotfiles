@@ -32,9 +32,12 @@
     {
       # Add / remove hosts here.
       # Apply with: home-manager switch --flake .#<hostname>
+      # home-manager also tries homeConfigurations."<user>@<hostname>" then "<user>"
       homeConfigurations = {
         work = mkHome "work";
         home = mkHome "home";
+        "martin@armageddon" = mkHome "home";
+        martin = mkHome "home";
       };
 
       # Convenience: `nix fmt` formats all .nix files
