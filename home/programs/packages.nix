@@ -32,6 +32,12 @@
     git-lfs
     lazygit      # TUI git client
     nixpkgs-fmt  # Nix formatter
+    copilot-cli  # GitHub Copilot CLI
+
+    # ── Runtimes ─────────────────────────────────────────────────────────
+    nodejs_22    # Node.js LTS
+    nodePackages.pnpm  # pnpm package manager
+    dotnet-sdk     # .NET SDK
 
     # ── Misc ─────────────────────────────────────────────────────────────
     fastfetch    # system info
