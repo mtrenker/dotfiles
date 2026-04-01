@@ -37,7 +37,6 @@
     nodejs_22    # Node.js LTS
     nodePackages.pnpm  # pnpm package manager
     dotnet-sdk     # .NET SDK
-    github-copilot-cli  # GitHub Copilot CLI
 
     # ── Misc ─────────────────────────────────────────────────────────────
     fastfetch    # system info
