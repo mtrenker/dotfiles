@@ -36,7 +36,11 @@
     # ── Runtimes ─────────────────────────────────────────────────────────
     nodejs_22    # Node.js LTS
     nodePackages.pnpm  # pnpm package manager
-    dotnet-sdk     # .NET SDK
+    (dotnetCorePackages.combinePackages [
+      dotnetCorePackages.sdk_8_0
+      dotnetCorePackages.sdk_9_0
+      dotnetCorePackages.sdk_10_0
+    ])
 
     # ── Misc ─────────────────────────────────────────────────────────────
     fastfetch    # system info
