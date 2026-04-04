@@ -96,6 +96,13 @@
 
         # sync
         sync = "!git fetch origin && git rebase origin/$(git branch --show-current)";
+
+        # worktrees
+        wta  = "worktree add";
+        wtls = "worktree list";
+        wtrm = "worktree remove";
+        wtp  = "worktree prune";
+        wtmv = "worktree move";
       };
     };
 
