@@ -24,5 +24,9 @@
     EDITOR  = "nvim";
     PAGER   = "less -FRX";
     MANPAGER = "nvim +Man!";
+    NPM_CONFIG_PREFIX = "${config.home.homeDirectory}/.npm-global";
   };
+
+  # Make npm-global binaries available on PATH
+  home.sessionPath = [ "${config.home.homeDirectory}/.npm-global/bin" ];
 }
