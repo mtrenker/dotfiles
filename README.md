@@ -11,14 +11,19 @@ dotfiles/
 ├── bootstrap.sh           # One-shot setup script for fresh machines
 ├── home/
 │   ├── common.nix         # Shared config imported by every host
+│   ├── features/
+│   │   ├── dev.nix        # Shared developer tooling (e.g. Neovim)
+│   │   └── niri.nix       # Shared Wayland/Niri-oriented packages
 │   ├── programs/
-│   │   ├── fish.nix       # Fish shell + aliases + functions
+│   │   ├── bash.nix       # Bash shell + aliases + functions
 │   │   ├── git.nix        # Git config + delta pager
 │   │   ├── neovim.nix     # Neovim with Lua config + plugins
 │   │   └── packages.nix   # Common CLI tools + starship, zoxide, direnv
 │   └── hosts/
-│       ├── work.nix       # Work laptop overrides
-│       └── home.nix       # Home desktop overrides
+│       ├── defiant.nix    # Beefy main PC
+│       ├── voyager.nix    # Maxed-out Framework desktop
+│       ├── serenity.nix   # First-gen Framework laptop
+│       └── work.nix       # Work laptop overrides
 ```
 
 ## Bootstrap a fresh machine
@@ -43,12 +48,12 @@ The script will:
 
 ## Daily usage
 
-| Task              | Command                                                         |
-| ----------------- | --------------------------------------------------------------- |
-| Apply changes     | `hms` (alias) or `home-manager switch --flake ~/.dotfiles#work` |
-| Update all inputs | `nix flake update ~/.dotfiles` then `hms`                       |
-| Open dotfiles     | `hme` (alias — opens in `$EDITOR`)                              |
-| Format Nix files  | `nix fmt ~/.dotfiles`                                           |
+| Task              | Command                                                            |
+| ----------------- | ------------------------------------------------------------------ |
+| Apply changes     | `hms` or `home-manager switch --flake ~/.dotfiles#defiant`         |
+| Update all inputs | `nix flake update ~/.dotfiles` then `hms`                          |
+| Open dotfiles     | `hme` (opens detected dotfiles dir in `$EDITOR`)                   |
+| Format Nix files  | `nix fmt ~/.dotfiles`                                              |
 
 ## Adding a new host
 
@@ -70,8 +75,9 @@ The script will:
 ## Customising
 
 - **Packages**: edit `home/programs/packages.nix`
-- **Shell aliases / functions**: edit `home/programs/fish.nix`
-- **Neovim plugins**: edit `home/programs/neovim.nix`
+- **Shell aliases / functions**: edit `home/programs/bash.nix`
+- **Developer tooling**: edit `home/features/dev.nix` and `home/programs/neovim.nix`
+- **Wayland/Niri-oriented packages**: edit `home/features/niri.nix`
 - **Git identity**: set per-host in `home/hosts/<hostname>.nix`
 - **Host-specific packages**: add to `home.packages` in the host file
 

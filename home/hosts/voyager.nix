@@ -1,19 +1,18 @@
-# Host: work — work laptop configuration
+# Host: voyager — maxed-out Framework desktop
 { pkgs, ... }:
 
 {
   imports = [
     ../features/dev.nix
+    ../features/niri.nix
   ];
 
   home.username = "martin";
   home.homeDirectory = "/home/martin";
 
-  # Host-specific git identity (overrides common.nix defaults)
   programs.git.settings.user.email = "martin@pacabytes.io";
 
-  # Work-specific packages
   home.packages = with pkgs; [
-    # e.g. kubectl, awscli2, docker-compose, terraform …
+    # Machine-specific packages for voyager go here.
   ];
 }

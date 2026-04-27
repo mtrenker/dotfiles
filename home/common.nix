@@ -6,7 +6,6 @@
   imports = [
     ./programs/bash.nix
     ./programs/git.nix
-    ./programs/neovim.nix
     ./programs/packages.nix
   ];
 
@@ -21,12 +20,20 @@
 
   # Prettier diffs / less pager
   home.sessionVariables = {
-    EDITOR  = "nvim";
-    PAGER   = "less -FRX";
+    EDITOR = "nvim";
+    PAGER = "less -FRX";
     MANPAGER = "nvim +Man!";
+
+    # Keep npm globals separate from the Nix-managed Node installation.
     NPM_CONFIG_PREFIX = "${config.home.homeDirectory}/.npm-global";
+
+    # pnpm v10 expects an explicit global bin dir (or PNPM_HOME).
+    PNPM_HOME = "${config.xdg.dataHome}/pnpm";
   };
 
-  # Make npm-global binaries available on PATH
-  home.sessionPath = [ "${config.home.homeDirectory}/.npm-global/bin" ];
+  # Make npm and pnpm global binaries available on PATH
+  home.sessionPath = [
+    "${config.home.homeDirectory}/.npm-global/bin"
+    "${config.xdg.dataHome}/pnpm"
+  ];
 }

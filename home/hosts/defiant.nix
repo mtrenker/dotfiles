@@ -1,4 +1,4 @@
-# Host: work — work laptop configuration
+# Host: defiant — beefy main PC
 { pkgs, ... }:
 
 {
@@ -9,11 +9,9 @@
   home.username = "martin";
   home.homeDirectory = "/home/martin";
 
-  # Host-specific git identity (overrides common.nix defaults)
   programs.git.settings.user.email = "martin@pacabytes.io";
 
-  # Work-specific packages
   home.packages = with pkgs; [
-    # e.g. kubectl, awscli2, docker-compose, terraform …
+    # Machine-specific packages for defiant go here.
   ];
 }

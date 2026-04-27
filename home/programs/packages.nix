@@ -1,5 +1,16 @@
 { config, pkgs, ... }:
 
+let
+  dotfilesDir = ''
+    if [ -d "$HOME/dotfiles" ]; then
+      printf '%s' "$HOME/dotfiles"
+    elif [ -d "$HOME/.dotfiles" ]; then
+      printf '%s' "$HOME/.dotfiles"
+    else
+      printf '%s' "$HOME/dotfiles"
+    fi
+  '';
+in
 {
   home.packages = with pkgs; [
     # ── Shell tools ──────────────────────────────────────────────────────
@@ -46,5 +57,17 @@
     fastfetch    # system info
     tldr         # quick man pages
     tokei        # code statistics
+
+    (writeShellScriptBin "hms" ''
+      set -euo pipefail
+      DOTFILES="$(${dotfilesDir})"
+      exec home-manager switch --flake "$DOTFILES#${config.home.username}" -b backup
+    '')
+
+    (writeShellScriptBin "hme" ''
+      set -euo pipefail
+      DOTFILES="$(${dotfilesDir})"
+      exec "${config.home.sessionVariables.EDITOR}" "$DOTFILES"
+    '')
   ];
 }

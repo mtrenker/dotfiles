@@ -34,10 +34,16 @@
       # Apply with: home-manager switch --flake .#<hostname>
       # home-manager also tries homeConfigurations."<user>@<hostname>" then "<user>"
       homeConfigurations = {
+        defiant = mkHome "defiant";
+        voyager = mkHome "voyager";
+        serenity = mkHome "serenity";
         work = mkHome "work";
+
+        # Compatibility aliases while hostnames are migrating.
         home = mkHome "home";
-        "martin@armageddon" = mkHome "home";
-        martin = mkHome "home";
+        "martin@defiant" = mkHome "defiant";
+        "martin@armageddon" = mkHome "defiant";
+        martin = mkHome "defiant";
       };
 
       # Convenience: `nix fmt` formats all .nix files
