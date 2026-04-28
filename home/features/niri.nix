@@ -2,8 +2,9 @@
 
 {
   home.packages = with pkgs; [
-    # Core Wayland / Niri desktop tools
-    niri
+    # Core Wayland desktop tools
+    # Note: on non-NixOS machines like voyager, install the compositor
+    # itself system-wide so it can use the host graphics stack cleanly.
     foot
     fuzzel
     waybar
@@ -21,8 +22,30 @@
     playerctl
   ];
 
-  xdg.configFile."systemd/user/niri.service".source = "${pkgs.niri}/share/systemd/user/niri.service";
-  xdg.configFile."systemd/user/niri-shutdown.target".source = "${pkgs.niri}/share/systemd/user/niri-shutdown.target";
+  xdg.configFile."systemd/user/niri.service".text = ''
+    [Unit]
+    Description=A scrollable-tiling Wayland compositor
+    BindsTo=graphical-session.target
+    Before=graphical-session.target
+    Wants=graphical-session-pre.target
+    After=graphical-session-pre.target
+
+    Wants=xdg-desktop-autostart.target
+    Before=xdg-desktop-autostart.target
+
+    [Service]
+    Slice=session.slice
+    Type=notify
+    ExecStart=/usr/bin/niri --session
+  '';
+
+  xdg.configFile."systemd/user/niri-shutdown.target".text = ''
+    [Unit]
+    Description=Shutdown running Niri session
+    BindsTo=graphical-session.target
+    Before=graphical-session.target
+    StopWhenUnneeded=yes
+  '';
 
   xdg.configFile."niri/config.kdl".text = ''
     // Shared Niri baseline, initially designed around voyager.
