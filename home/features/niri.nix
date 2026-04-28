@@ -21,6 +21,9 @@
     playerctl
   ];
 
+  xdg.configFile."systemd/user/niri.service".source = "${pkgs.niri}/share/systemd/user/niri.service";
+  xdg.configFile."systemd/user/niri-shutdown.target".source = "${pkgs.niri}/share/systemd/user/niri-shutdown.target";
+
   xdg.configFile."niri/config.kdl".text = ''
     // Shared Niri baseline, initially designed around voyager.
     // Safe to reuse on other Niri machines and override later per-host if needed.
