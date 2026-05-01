@@ -111,6 +111,7 @@
 
         // Launcher / apps
         Mod+Return { spawn "ghostty"; }
+        Super+T { spawn "ghostty"; }
         Mod+D { spawn "fuzzel"; }
         Super+Alt+L { spawn "swaylock"; }
 

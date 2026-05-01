@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, hostname, ... }:
 
 let
   dotfilesDir = ''
@@ -61,7 +61,7 @@ in
     (writeShellScriptBin "hms" ''
       set -euo pipefail
       DOTFILES="$(${dotfilesDir})"
-      exec home-manager switch --flake "$DOTFILES#${config.home.username}" -b backup
+      exec home-manager switch --flake "$DOTFILES#${hostname}" -b backup
     '')
 
     (writeShellScriptBin "hme" ''
