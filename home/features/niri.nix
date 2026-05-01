@@ -5,7 +5,8 @@
     # Core Wayland desktop tools
     # Note: on non-NixOS machines like voyager, install the compositor
     # itself system-wide so it can use the host graphics stack cleanly.
-    foot
+    foot # lightweight fallback terminal
+    ghostty # polished default terminal with tabs/splits
     fuzzel
     waybar
     mako
@@ -109,7 +110,7 @@
         Mod+Shift+Slash { show-hotkey-overlay; }
 
         // Launcher / apps
-        Mod+Return { spawn "foot"; }
+        Mod+Return { spawn "ghostty"; }
         Mod+D { spawn "fuzzel"; }
         Super+Alt+L { spawn "swaylock"; }
 
@@ -262,7 +263,7 @@
 
   xdg.configFile."fuzzel/fuzzel.ini".text = ''
     [main]
-    terminal=foot
+    terminal=ghostty
     width=40
     lines=12
     horizontal-pad=16
