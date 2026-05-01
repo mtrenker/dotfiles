@@ -18,6 +18,23 @@
   # XDG base dirs
   xdg.enable = true;
 
+  # User locale. On non-NixOS this affects Home Manager sessions and Nix-built
+  # applications; the system locale is still owned by the host distro.
+  home.language = {
+    base = "de_DE.UTF-8";
+    ctype = "de_DE.UTF-8";
+    numeric = "de_DE.UTF-8";
+    time = "de_DE.UTF-8";
+    collate = "de_DE.UTF-8";
+    monetary = "de_DE.UTF-8";
+    messages = "de_DE.UTF-8";
+    paper = "de_DE.UTF-8";
+    name = "de_DE.UTF-8";
+    address = "de_DE.UTF-8";
+    telephone = "de_DE.UTF-8";
+    measurement = "de_DE.UTF-8";
+  };
+
   # Prettier diffs / less pager
   home.sessionVariables = {
     EDITOR = "nvim";
