@@ -2,6 +2,23 @@
 # Host files supply `username` (and optionally `hostname`) via the module system.
 { config, pkgs, hostname, ... }:
 
+let
+  germanLocale = "de_DE.UTF-8";
+  localeVariables = {
+    LANG = germanLocale;
+    LC_ADDRESS = germanLocale;
+    LC_COLLATE = germanLocale;
+    LC_CTYPE = germanLocale;
+    LC_MEASUREMENT = germanLocale;
+    LC_MESSAGES = germanLocale;
+    LC_MONETARY = germanLocale;
+    LC_NAME = germanLocale;
+    LC_NUMERIC = germanLocale;
+    LC_PAPER = germanLocale;
+    LC_TELEPHONE = germanLocale;
+    LC_TIME = germanLocale;
+  };
+in
 {
   imports = [
     ./programs/bash.nix
@@ -21,19 +38,23 @@
   # User locale. On non-NixOS this affects Home Manager sessions and Nix-built
   # applications; the system locale is still owned by the host distro.
   home.language = {
-    base = "de_DE.UTF-8";
-    ctype = "de_DE.UTF-8";
-    numeric = "de_DE.UTF-8";
-    time = "de_DE.UTF-8";
-    collate = "de_DE.UTF-8";
-    monetary = "de_DE.UTF-8";
-    messages = "de_DE.UTF-8";
-    paper = "de_DE.UTF-8";
-    name = "de_DE.UTF-8";
-    address = "de_DE.UTF-8";
-    telephone = "de_DE.UTF-8";
-    measurement = "de_DE.UTF-8";
+    base = germanLocale;
+    ctype = germanLocale;
+    numeric = germanLocale;
+    time = germanLocale;
+    collate = germanLocale;
+    monetary = germanLocale;
+    messages = germanLocale;
+    paper = germanLocale;
+    name = germanLocale;
+    address = germanLocale;
+    telephone = germanLocale;
+    measurement = germanLocale;
   };
+
+  # Make the same locale visible to apps launched by systemd user services,
+  # including the Niri session on non-NixOS hosts.
+  systemd.user.sessionVariables = localeVariables;
 
   # Prettier diffs / less pager
   home.sessionVariables = {
