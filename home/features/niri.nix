@@ -64,6 +64,7 @@
     input {
         keyboard {
             xkb {
+                layout "de"
                 options "compose:ralt,ctrl:nocaps"
             }
             numlock
