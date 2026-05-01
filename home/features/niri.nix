@@ -3,10 +3,19 @@
 {
   home.packages = with pkgs; [
     # Core Wayland desktop tools
-    # Note: on non-NixOS machines like voyager, install the compositor
-    # itself system-wide so it can use the host graphics stack cleanly.
+    # Note: on non-NixOS machines like voyager, install the compositor and
+    # graphics-coupled GTK/OpenGL apps system-wide so they use the host graphics
+    # stack cleanly. Ghostty should come from CachyOS/pacman, not Nix.
     foot # lightweight fallback terminal
-    ghostty # polished default terminal with tabs/splits
+    (writeShellScriptBin "default-terminal" ''
+      set -euo pipefail
+
+      if [ -x /usr/bin/ghostty ]; then
+        exec /usr/bin/ghostty "$@"
+      fi
+
+      exec ${foot}/bin/foot "$@"
+    '')
     fuzzel
     waybar
     mako
@@ -110,8 +119,8 @@
         Mod+Shift+Slash { show-hotkey-overlay; }
 
         // Launcher / apps
-        Mod+Return { spawn "ghostty"; }
-        Super+T { spawn "ghostty"; }
+        Mod+Return { spawn "default-terminal"; }
+        Super+T { spawn "default-terminal"; }
         Mod+D { spawn "fuzzel"; }
         Super+Alt+L { spawn "swaylock"; }
 
@@ -264,7 +273,7 @@
 
   xdg.configFile."fuzzel/fuzzel.ini".text = ''
     [main]
-    terminal=ghostty
+    terminal=default-terminal
     width=40
     lines=12
     horizontal-pad=16
