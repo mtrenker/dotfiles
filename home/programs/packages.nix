@@ -18,6 +18,7 @@ in
     eza          # better ls
     fd           # better find
     ripgrep      # better grep
+    tmux         # terminal multiplexer for persistent remote sessions
 
     # ── File / archive ───────────────────────────────────────────────────
     unzip
