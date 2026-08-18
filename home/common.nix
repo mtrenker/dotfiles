@@ -3,20 +3,20 @@
 { config, pkgs, hostname, ... }:
 
 let
-  germanLocale = "de_DE.UTF-8";
+  englishLocale = "en_US.UTF-8";
   localeVariables = {
-    LANG = germanLocale;
-    LC_ADDRESS = germanLocale;
-    LC_COLLATE = germanLocale;
-    LC_CTYPE = germanLocale;
-    LC_MEASUREMENT = germanLocale;
-    LC_MESSAGES = germanLocale;
-    LC_MONETARY = germanLocale;
-    LC_NAME = germanLocale;
-    LC_NUMERIC = germanLocale;
-    LC_PAPER = germanLocale;
-    LC_TELEPHONE = germanLocale;
-    LC_TIME = germanLocale;
+    LANG = englishLocale;
+    LC_ADDRESS = englishLocale;
+    LC_COLLATE = englishLocale;
+    LC_CTYPE = englishLocale;
+    LC_MEASUREMENT = englishLocale;
+    LC_MESSAGES = englishLocale;
+    LC_MONETARY = englishLocale;
+    LC_NAME = englishLocale;
+    LC_NUMERIC = englishLocale;
+    LC_PAPER = englishLocale;
+    LC_TELEPHONE = englishLocale;
+    LC_TIME = englishLocale;
   };
 in
 {
@@ -38,18 +38,18 @@ in
   # User locale. On non-NixOS this affects Home Manager sessions and Nix-built
   # applications; the system locale is still owned by the host distro.
   home.language = {
-    base = germanLocale;
-    ctype = germanLocale;
-    numeric = germanLocale;
-    time = germanLocale;
-    collate = germanLocale;
-    monetary = germanLocale;
-    messages = germanLocale;
-    paper = germanLocale;
-    name = germanLocale;
-    address = germanLocale;
-    telephone = germanLocale;
-    measurement = germanLocale;
+    base = englishLocale;
+    ctype = englishLocale;
+    numeric = englishLocale;
+    time = englishLocale;
+    collate = englishLocale;
+    monetary = englishLocale;
+    messages = englishLocale;
+    paper = englishLocale;
+    name = englishLocale;
+    address = englishLocale;
+    telephone = englishLocale;
+    measurement = englishLocale;
   };
 
   # Make the same locale visible to apps launched by systemd user services,
