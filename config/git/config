@@ -1,0 +1,69 @@
+# Shared defaults migrated from Home Manager.
+# Machine-private overrides belong in ~/.gitconfig.local (included last).
+[user]
+    name = Martin Trenker
+    email = martin@pacabytes.io
+[init]
+    defaultBranch = main
+[color]
+    ui = auto
+[core]
+    editor = nvim
+    autocrlf = input
+    pager = delta
+    preloadindex = true
+    fscache = true
+    excludesFile = ~/.config/git/dotfiles-ignore
+[delta]
+    navigate = true
+    line-numbers = true
+    side-by-side = false
+[merge]
+    tool = nvimdiff
+    conflictstyle = zdiff3
+[diff]
+    tool = nvimdiff
+    algorithm = histogram
+[push]
+    default = simple
+    autoSetupRemote = true
+[pull]
+    rebase = true
+[rebase]
+    autoStash = true
+    autoSquash = true
+[status]
+    showUntrackedFiles = all
+    submoduleSummary = true
+[maintenance]
+    auto = true
+[url "git@github.com:"]
+    insteadOf = https://github.com/
+[alias]
+    co = checkout
+    ci = commit
+    br = branch
+    pl = pull
+    ps = push
+    st = status -sb
+    df = diff
+    lg = log --oneline --graph --decorate --all
+    ll = log --oneline --graph --decorate --all -10
+    last = log -1 HEAD
+    lol = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+    undo = reset --soft HEAD~1
+    unstage = reset HEAD --
+    amend = commit --amend --no-edit
+    fixup = commit --fixup
+    recent = branch --sort=-committerdate
+    cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -r -n 1 git branch -d"
+    save = stash push -m
+    pop = stash pop
+    wip = "!git add -A && git commit -m 'wip'"
+    unwip = "!git log --oneline -1 | grep -q 'wip' && git reset HEAD~1"
+    sync = "!git fetch origin && git rebase origin/$(git branch --show-current)"
+    wta = worktree add
+    wtls = worktree list
+    wtrm = worktree remove
+    wtp = worktree prune
+    wtmv = worktree move

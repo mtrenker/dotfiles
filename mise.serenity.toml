@@ -1,0 +1,3 @@
+# Framework laptop: shared machine applications and preferences only.
+# Desktop setup is deferred while evaluating Noctalia.
+# bash bootstrap.sh serenity --dry-run

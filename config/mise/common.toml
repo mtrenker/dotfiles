@@ -1,0 +1,14 @@
+# Installed as ~/.config/mise/conf.d/20-dotfiles.toml.
+# Shared preferences and explicitly requested machine-wide applications.
+# Runtimes and project development tools still belong to their repositories.
+[tools]
+claude = "latest"
+codex = "latest"
+herdr = "latest"
+gh = "latest"
+
+# These tools use mise's native-binary aqua registry backends, not npm/Node.
+[env]
+EDITOR = "nvim"
+PAGER = "less -FRX"
+MANPAGER = "nvim +Man!"

@@ -14,6 +14,8 @@
       cat    = "bat --paging=never";
       grep   = "rg";
       find   = "fd";
+      vi     = "nvim";
+      vim    = "nvim";
       g      = "git";
       ga     = "git add";
       gc     = "git commit";

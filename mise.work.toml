@@ -1,0 +1,13 @@
+# Work laptop: shared applications/preferences plus work-only Git helpers.
+# Work-project runtimes and development tools belong in those repositories.
+# bash bootstrap.sh work --dry-run
+[dotfiles]
+"~/.config/git/dotfiles-work.gitconfig" = { source = "config/git/work.gitconfig", mode = "symlink" }
+"~/.gitconfig/dotfiles" = { comment = "#", block = '''
+[include]
+    path = ~/.config/git/dotfiles.gitconfig
+[include]
+    path = ~/.config/git/dotfiles-work.gitconfig
+[include]
+    path = ~/.gitconfig.local
+''' }
