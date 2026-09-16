@@ -1,0 +1,3 @@
+# Framework desktop: shared machine applications and preferences only.
+# Desktop setup is deferred while evaluating Noctalia.
+# bash bootstrap.sh voyager --dry-run

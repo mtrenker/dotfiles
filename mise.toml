@@ -1,0 +1,82 @@
+# Machine resources, not project tool versions. Select exactly one host:
+# bash bootstrap.sh defiant --dry-run
+# bash bootstrap.sh defiant
+# pacman owns machine applications. Dev toolchains belong to their projects.
+
+[bootstrap.packages]
+"pacman:mise" = "latest"
+"pacman:bash" = "latest"
+"pacman:git" = "latest"
+"pacman:git-lfs" = "latest"
+"pacman:git-delta" = "latest"
+"pacman:lazygit" = "latest"
+"pacman:curl" = "latest"
+"pacman:wget" = "latest"
+"pacman:less" = "latest"
+"pacman:man-db" = "latest"
+"pacman:unzip" = "latest"
+"pacman:zip" = "latest"
+"pacman:7zip" = "latest"
+"pacman:xz" = "latest"
+"pacman:httpie" = "latest"
+"pacman:bat" = "latest"
+"pacman:eza" = "latest"
+"pacman:fd" = "latest"
+"pacman:ripgrep" = "latest"
+"pacman:tmux" = "latest"
+"pacman:jq" = "latest"
+"pacman:go-yq" = "latest"
+"pacman:neovim" = "latest"
+"pacman:starship" = "latest"
+"pacman:zoxide" = "latest"
+"pacman:direnv" = "latest"
+"pacman:fzf" = "latest"
+"pacman:htop" = "latest"
+"pacman:btop" = "latest"
+"pacman:bottom" = "latest"
+"pacman:dust" = "latest"
+"pacman:duf" = "latest"
+"pacman:fastfetch" = "latest"
+"pacman:tealdeer" = "latest"
+"pacman:tokei" = "latest"
+"pacman:usage" = "latest"
+# Browsers available on every host.
+"pacman:firefox" = "latest"
+"pacman:chromium" = "latest"
+# Enable tailscaled and authenticate separately; bootstrap only installs the package.
+"pacman:tailscale" = "latest"
+# Text coverage plus Chinese/Japanese/Korean glyphs and color emoji.
+"pacman:noto-fonts" = "latest"
+"pacman:noto-fonts-cjk" = "latest"
+"pacman:noto-fonts-emoji" = "latest"
+
+[dotfiles]
+# Dedicated fragments preserve unrelated personal global configuration.
+"~/.config/mise/conf.d/20-dotfiles.toml" = { source = "config/mise/common.toml", mode = "symlink" }
+"~/.config/bash/interactive.bash" = { source = "config/bash/interactive.bash", mode = "symlink" }
+"~/.config/starship.toml" = { source = "config/starship.toml", mode = "symlink" }
+"~/.config/nvim" = { source = "config/nvim", mode = "symlink" }
+"~/.config/git/dotfiles.gitconfig" = { source = "config/git/config", mode = "symlink" }
+"~/.config/git/dotfiles-ignore" = { source = "config/git/ignore", mode = "symlink" }
+# Edit only owned blocks, leaving unrelated shell settings and Git config intact.
+"~/.bashrc/dotfiles" = { block = '''
+if [[ $- == *i* && -r "$HOME/.config/bash/interactive.bash" ]]; then
+  source "$HOME/.config/bash/interactive.bash"
+fi
+''' }
+"~/.gitconfig/dotfiles" = { comment = "#", block = '''
+[include]
+    path = ~/.config/git/dotfiles.gitconfig
+[include]
+    path = ~/.gitconfig.local
+''' }
+
+[bootstrap.mise_shell_activate]
+bash_profile = "shims"
+bashrc = "activate"
+
+[tasks.bootstrap]
+description = "Install shared CLI applications, not project toolchains"
+# A fresh invocation sees the global fragment linked during the dotfiles phase.
+# Keep this list explicit: bare `mise install` would include unrelated global tools.
+run = "mise install claude codex herdr gh"

@@ -1,0 +1,5 @@
+# Legacy work-only helpers. The scripts/authentication must be set up separately.
+[credential "https://dev.azure.com/dglecom"]
+    helper = !/home/martin/dev/douglas/credentials-helper.sh dglecom
+[credential "https://dev.azure.com/dglas"]
+    helper = !/home/martin/dev/douglas/credentials-helper.sh dglas

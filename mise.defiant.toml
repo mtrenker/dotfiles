@@ -1,0 +1,23 @@
+# Current machine: defiant (main PC).
+# Uses shared machine applications and preferences, no global dev toolchain.
+# bash bootstrap.sh defiant --dry-run
+# Noctalia settings remain local; Hyprland starts the shell.
+[bootstrap.packages]
+"pacman:noctalia" = "latest"
+# Machine container engine; projects own Compose files and database versions.
+# Enable the service and grant user access separately (see README).
+"pacman:docker" = "latest"
+"pacman:docker-compose" = "latest"
+
+[dotfiles]
+# Start the desktop only after a local login on tty1.
+"~/.bash_profile/hyprland-autostart" = { block = '''
+if [[ $(tty) == /dev/tty1 && -z ${WAYLAND_DISPLAY:-} && -z ${DISPLAY:-} ]]; then
+  exec start-hyprland
+fi
+''' }
+# Link individual files to preserve other local Hyprland configuration.
+"~/.config/hypr/shared.lua" = { source = "config/hypr/shared.lua", mode = "symlink" }
+"~/.config/hypr/host.lua" = { source = "config/hypr/hosts/defiant.lua", mode = "symlink" }
+"~/.config/hypr/hyprland.lua" = { source = "config/hypr/hyprland.lua", mode = "symlink" }
+"~/.config/environment.d/20-desktop-language.conf" = { source = "config/environment.d/20-desktop-language.conf", mode = "symlink" }
