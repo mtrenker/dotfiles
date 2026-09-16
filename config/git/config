@@ -1,4 +1,4 @@
-# Shared defaults migrated from Home Manager.
+# Shared Git defaults.
 # Machine-private overrides belong in ~/.gitconfig.local (included last).
 [user]
     name = Martin Trenker

@@ -1,8 +1,9 @@
 # dotfiles
 
 Machine setup for Arch/CachyOS using [mise bootstrap](https://mise.jdx.dev/bootstrap.html).
-The `mise-bootstrap` branch is a migration in progress, not yet a complete
-replacement for Home Manager. The current machine is **defiant**.
+Mise manages bootstrap and dotfiles; pacman installs machine applications.
+The current machine is **defiant**. Nix and Home Manager are no longer used by
+this repository.
 
 ## Ownership
 
@@ -301,8 +302,7 @@ launchers may not inherit your project's mise environment.
 ### Parsers and plugin updates
 
 Treesitter uses available parsers without automatic downloads; normal syntax
-highlighting remains the fallback. Unlike the Nix setup, we do not install every
-grammar. If needed, install selected parsers explicitly with `:TSInstall lua`
+highlighting remains the fallback. We do not install every grammar. If needed, install selected parsers explicitly with `:TSInstall lua`
 (or another language). This requires a C compiler and tree-sitter CLI 0.26.1+
 on PATH, installed separately. The native Telescope fzf extension is omitted to
 avoid a mandatory compilation step; Telescope uses its built-in sorter.
@@ -351,16 +351,19 @@ syntax, options, formatter selection, and LSP executable gating without download
 plugins. A separate disposable-profile smoke test installed the locked plugins and
 opened a Lua buffer successfully. Dry runs do not install packages.
 
-## Migration still pending
+## Remaining machine setup
 
 - Apply and verify Neovim interactively on Defiant. Bash/Git have been applied;
   the new editor configuration has only been exercised in disposable profiles.
-- Decide on the desktop setup separately. Do not port the legacy Niri feature
-  while desktop work is deferred.
-- Migrate locale/session environment and convenience commands.
+- Verify desktop and locale/session settings on each host. Defiant uses Hyprland;
+  desktop setup for other hosts remains deferred.
+- Add convenience commands as needed.
 - Test package installation and shell behavior on the target machine.
-- Remove old Home Manager symlinks safely, resolve file conflicts, and audit
-  duplicate installs. Do not remove Nix before migrating its config sources.
+- Audit old Home Manager symlinks and duplicate installs before uninstalling Nix
+  on existing machines. Back up any active configs pointing into `/nix/store`,
+  replace them with mise-managed configs, and verify a fresh shell/session first.
+  Removing repository files does not uninstall Nix or clean up its shell hooks.
 
-`home/`, `flake.nix`, and `flake.lock` remain migration references. The new
-bootstrap does not apply them. Existing application configs are not overwritten.
+The former `home/`, `flake.nix`, and `flake.lock` are available in Git history,
+not part of the supported setup. Bootstrap does not overwrite existing application
+configs or automatically remove legacy machine state.
