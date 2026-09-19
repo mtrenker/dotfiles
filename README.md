@@ -72,7 +72,7 @@ username is a separate system-level getty setting, not managed by bootstrap.
 
 - `config/hypr/shared.lua`: appearance, German keyboard layout (`de`), shortcuts,
   and Noctalia autostart instead of Waybar/Mako.
-- `config/hypr/hosts/defiant.lua`: monitor layout, ultrawide tiling, and existing Proton Pass agent startup.
+- `config/hypr/hosts/defiant.lua`: monitor layout, ultrawide tiling, and the Proton Pass SSH socket environment.
 - `config/hypr/hyprland.lua`: loads shared settings and the selected `host.lua`.
 - `config/environment.d/20-desktop-language.conf`: English defaults for user services.
   Hyprland sets the same environment for directly launched applications.
@@ -119,6 +119,27 @@ in the managed fragment.
 Open a new Bash shell for activation. Review existing unmarked mise activation
 lines to avoid duplicate hooks. Desktop language variables are configured for defiant only. Custom XDG config directories are not supported by these target
 paths yet.
+
+## Proton Pass SSH agent (defiant)
+
+Install `pass-cli` at `~/.local/bin/pass-cli` and authenticate/unlock it separately.
+After bootstrap links the service, enable it once per machine:
+
+```bash
+pass-cli ssh-agent daemon stop  # only when switching from the old daemon
+systemctl --user daemon-reload
+systemctl --user enable --now proton-pass-ssh-agent.service
+ssh-add -l
+```
+
+The user service starts at login and restarts after failures with a 30-second delay.
+Hyprland and user services use `$XDG_RUNTIME_DIR/proton-pass-agent.sock`; keep any
+shell-level `SSH_AUTH_SOCK` override consistent. Do not also start the CLI daemon.
+Unlocking Pass remains manual; after unlocking, use
+`systemctl --user restart proton-pass-ssh-agent.service` to retry immediately.
+Check service status with `systemctl --user status proton-pass-ssh-agent.service`
+and logs with `journalctl --user -u proton-pass-ssh-agent.service`.
+`pass-cli ssh-agent daemon status` tracks the old daemon, not this systemd service.
 
 ## Tailscale
 

@@ -21,3 +21,6 @@ fi
 "~/.config/hypr/host.lua" = { source = "config/hypr/hosts/defiant.lua", mode = "symlink" }
 "~/.config/hypr/hyprland.lua" = { source = "config/hypr/hyprland.lua", mode = "symlink" }
 "~/.config/environment.d/20-desktop-language.conf" = { source = "config/environment.d/20-desktop-language.conf", mode = "symlink" }
+"~/.config/environment.d/30-proton-pass-ssh.conf" = { source = "config/environment.d/30-proton-pass-ssh.conf", mode = "symlink" }
+# Enable separately after installing and authenticating pass-cli (see README).
+"~/.config/systemd/user/proton-pass-ssh-agent.service" = { source = "config/systemd/user/proton-pass-ssh-agent.service", mode = "symlink" }

@@ -86,6 +86,10 @@ class ConfigTests(unittest.TestCase):
             "~/.config/hypr/host.lua": "config/hypr/hosts/defiant.lua",
             "~/.config/environment.d/20-desktop-language.conf":
                 "config/environment.d/20-desktop-language.conf",
+            "~/.config/environment.d/30-proton-pass-ssh.conf":
+                "config/environment.d/30-proton-pass-ssh.conf",
+            "~/.config/systemd/user/proton-pass-ssh-agent.service":
+                "config/systemd/user/proton-pass-ssh-agent.service",
         }
         for host in HOSTS:
             entries = load("mise.toml")["dotfiles"] | load(f"mise.{host}.toml").get("dotfiles", {})

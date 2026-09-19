@@ -1,0 +1,13 @@
+[Unit]
+Description=Proton Pass SSH agent
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/pass-cli ssh-agent start --socket-path %t/proton-pass-agent.sock
+Restart=on-failure
+RestartSec=30s
+UMask=0077
+
+[Install]
+WantedBy=default.target

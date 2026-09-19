@@ -36,9 +36,8 @@ end)
 hl.bind("SUPER + CTRL + right", hl.dsp.layout("colresize +conf"))
 hl.bind("SUPER + CTRL + left", hl.dsp.layout("colresize -conf"))
 
--- Existing Proton Pass setup; the CLI and authentication are installed separately.
+-- systemd manages the Proton Pass agent; the CLI and authentication remain local.
 hl.env("SSH_AUTH_SOCK", os.getenv("XDG_RUNTIME_DIR") .. "/proton-pass-agent.sock")
 hl.on("hyprland.start", function ()
     hl.exec_cmd("protonvpn-app")
-    hl.exec_cmd('/home/martin/.local/bin/pass-cli ssh-agent daemon start --socket-path "$XDG_RUNTIME_DIR/proton-pass-agent.sock"')
 end)
