@@ -1,0 +1,21 @@
+# Defiant only: Noctalia owns idle handling; do not also run hypridle/swayidle.
+[idle]
+behavior_order = ["screen-off", "suspend"]
+pre_action_fade_seconds = 0.0
+
+[idle.behavior.lock]
+enabled = false
+
+[idle.behavior.lock-and-suspend]
+enabled = false
+
+[idle.behavior.screen-off]
+enabled = true
+action = "screen_off"
+timeout = 300
+
+[idle.behavior.suspend]
+enabled = true
+action = "suspend"
+lock_before_suspend = false
+timeout = 3600

@@ -1,15 +1,20 @@
 # Current machine: defiant (main PC).
 # Uses shared machine applications and preferences, no global dev toolchain.
 # bash bootstrap.sh defiant --dry-run
-# Noctalia settings remain local; Hyprland starts the shell.
+# Hyprland starts Noctalia; only idle policy is managed here.
 [bootstrap.packages]
 "pacman:noctalia" = "latest"
+# Area screenshots to the clipboard via Super+Shift+S.
+"pacman:grim" = "latest"
+"pacman:slurp" = "latest"
+"pacman:wl-clipboard" = "latest"
 # Machine container engine; projects own Compose files and database versions.
 # Enable the service and grant user access separately (see README).
 "pacman:docker" = "latest"
 "pacman:docker-compose" = "latest"
 
 [dotfiles]
+"~/.config/noctalia/20-idle.toml" = { source = "config/noctalia/defiant-idle.toml", mode = "symlink" }
 # Start the desktop only after a local login on tty1.
 "~/.bash_profile/hyprland-autostart" = { block = '''
 if [[ $(tty) == /dev/tty1 && -z ${WAYLAND_DISPLAY:-} && -z ${DISPLAY:-} ]]; then
@@ -24,3 +29,4 @@ fi
 "~/.config/environment.d/30-proton-pass-ssh.conf" = { source = "config/environment.d/30-proton-pass-ssh.conf", mode = "symlink" }
 # Enable separately after installing and authenticating pass-cli (see README).
 "~/.config/systemd/user/proton-pass-ssh-agent.service" = { source = "config/systemd/user/proton-pass-ssh-agent.service", mode = "symlink" }
+"~/.config/systemd/user/proton-pass-ssh-agent.service.d/vault.conf" = { source = "config/systemd/user/proton-pass-ssh-agent.defiant.conf", mode = "symlink" }

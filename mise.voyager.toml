@@ -1,3 +1,32 @@
-# Framework desktop: shared machine applications and preferences only.
-# Desktop setup is deferred while evaluating Noctalia.
+# Framework desktop. Desktop setup is deferred while evaluating Noctalia.
 # bash bootstrap.sh voyager --dry-run
+
+[bootstrap.packages]
+# Provides the `hf` CLI; Python is an application dependency.
+"pacman:python-huggingface-hub" = "latest"
+# Match Defiant's container tooling; service activation remains manual.
+"pacman:docker" = "latest"
+"pacman:docker-compose" = "latest"
+# Herdr's systemd service creates an SSH-independent kernel keyring.
+"pacman:keyutils" = "latest"
+
+[dotfiles]
+# Enable manually after stopping the old Herdr server; do not disrupt live panes.
+"~/.config/systemd/user/herdr.service" = { source = "config/systemd/user/herdr.service", mode = "symlink" }
+"~/.config/environment.d/30-proton-pass-ssh.conf" = { source = "config/environment.d/30-proton-pass-ssh.conf", mode = "symlink" }
+"~/.config/systemd/user/proton-pass-ssh-agent.service" = { source = "config/systemd/user/proton-pass-ssh-agent.service", mode = "symlink" }
+"~/.config/systemd/user/proton-pass-ssh-agent.service.d/vault.conf" = { source = "config/systemd/user/proton-pass-ssh-agent.voyager.conf", mode = "symlink" }
+# environment.d covers user services; Bash also needs the socket explicitly.
+# Preserve an agent forwarded into an SSH session.
+"~/.bashrc/proton-pass-ssh" = { block = '''
+if [[ -z ${SSH_CONNECTION:-} || -z ${SSH_AUTH_SOCK:-} ]]; then
+  export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR:-/run/user/$UID}/proton-pass-agent.sock"
+fi
+''' }
+
+[tasks.bootstrap]
+description = "Install shared CLI applications and Voyager's Proton Pass CLI"
+run = [
+  "mise install claude codex pi herdr gh",
+  'bash "{{config_root}}/scripts/install-pass-cli.sh"',
+]

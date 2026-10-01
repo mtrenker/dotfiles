@@ -10,7 +10,7 @@ this repository.
 | Resource | Owner | Declaration |
 | --- | --- | --- |
 | Everyday CLI applications, Neovim, Bash | pacman | `[bootstrap.packages]` in root/host TOMLs |
-| Claude Code, Codex, and Herdr (all machines) | mise tools, native binaries | `config/mise/common.toml` |
+| Claude Code, Codex, Pi, and Herdr (all machines) | mise tools, native binaries | `config/mise/common.toml` |
 | Machine preferences and config files | mise dotfiles | `[dotfiles]` in root/host TOMLs |
 | Bash mise activation | mise bootstrap | `[bootstrap.mise_shell_activate]` |
 | Runtimes, SDKs, language servers, formatters, linters | Each project | `[tools]` in that project's `mise.toml` |
@@ -55,12 +55,15 @@ All four hosts (`defiant`, `voyager`, `serenity`, `work`) use the same shared
 applications and preferences. `work` additionally includes its legacy Azure Git
 credential helpers; the referenced scripts/authentication must exist separately.
 `defiant` additionally installs Noctalia, Docker Engine, and Docker Compose through
-pacman bootstrap packages. `voyager` and `serenity` remain placeholders for future host resources.
+pacman bootstrap packages. `voyager` additionally installs Proton Pass CLI and
+Hugging Face CLI (`hf`), Docker Engine, and Docker Compose; `serenity` remains a
+placeholder for future host resources.
 
 On `defiant`, bootstrap also links the Hyprland Lua config and desktop language
 preferences. Hyprland must already be installed; other hosts' desktops remain
-unmanaged. Noctalia's dependencies are handled by pacman, and its settings remain
-local. Bootstrap does not uninstall anything already present.
+unmanaged. Noctalia's dependencies are handled by pacman. Its idle policy is
+managed on Defiant; other settings remain local. Bootstrap does not uninstall
+anything already present.
 
 ### Hyprland and Noctalia (defiant)
 
@@ -93,6 +96,12 @@ Noctalia also provides a control center, window switcher, screenshot tools, and
 media controls; existing shortcuts are otherwise preserved. These commands target
 Noctalia 5's CLI, as installed on defiant.
 
+`Super+Shift+S` lets you drag-select an area and copies the screenshot to the
+clipboard for pasting with `Ctrl+V`. Press `Esc` to cancel without replacing the
+clipboard. No file is saved. The binding lives in `config/hypr/shared.lua`;
+`mise.defiant.toml` declares `grim`, `slurp`, and `wl-clipboard` as dependencies.
+`Super+Ctrl+S` moves the focused window to the scratchpad; `Super+S` toggles it.
+
 App language defaults to English using `C.UTF-8`, which needs no additional locale
 generation. Keyboard layout stays German. Apps with their own language preferences
 may need changing separately. Log out and back in after applying to start Noctalia
@@ -103,12 +112,40 @@ Before first applying on another installation, back up existing files under
 `~/.config/hypr/` and `~/.config/environment.d/`. The host declaration links individual
 files, not whole directories. Keep Noctalia's UI-managed settings local for now.
 
+### Idle power management (defiant)
+
+Mise links `config/noctalia/defiant-idle.toml` to
+`~/.config/noctalia/20-idle.toml`. Noctalia turns monitors off after **5 minutes**
+of inactivity and suspends Defiant after **1 hour** of inactivity (both measured
+from the last activity). It restores monitors on activity. There is no automatic
+lock, including before idle suspend; manual locking remains available.
+
+Noctalia handles idle inhibition, so do not start a second idle manager such as
+Hypridle or Swayidle. For long-running agents or remote work, enable Noctalia's
+caffeine mode to prevent idle actions:
+
+```bash
+noctalia msg caffeine-enable
+# Restore normal idle timers when finished:
+noctalia msg caffeine-disable
+```
+
+Running jobs alone do not prevent idle suspend. Suspended Defiant pauses agents
+and is unavailable over SSH until it wakes. Voyager has no desktop idle policy
+and remains always-on.
+
+The fragment hot-reloads; validate the effective settings with
+`noctalia config validate` and inspect them with `noctalia config export full`.
+GUI changes in `~/.local/state/noctalia/settings.toml` take precedence over this
+fragment. Remove only conflicting idle overrides there if the managed policy
+stops taking effect; do not delete unrelated settings.
+
 The wrapper requires an explicit host and runs `mise bootstrap --skip tools`.
-The repo's bootstrap task then runs only `mise install claude codex herdr gh`, after linking
+The repo's bootstrap task then runs only `mise install claude codex pi herdr gh`, after linking
 the shared global config. This avoids a broad install of unrelated personal tools.
-Claude Code, Codex, Herdr, and GitHub CLI use mise's aqua backends without requiring Node/npm; btop
+Claude Code, Codex, Pi, Herdr, and GitHub CLI use mise's aqua backends without requiring Node/npm; btop
 comes from pacman. Authentication is separate: launch `claude` or `codex` and
-follow its login flow, or run `gh auth login` for GitHub CLI. Update these apps explicitly with `mise upgrade claude codex herdr gh`. It does not install Nix, reset Git changes,
+follow its login flow, launch `pi` and use `/login`, or run `gh auth login` for GitHub CLI. Update these apps explicitly with `mise upgrade claude codex pi herdr gh`. It does not install Nix, reset Git changes,
 change the login shell, or silently replace conflicting dotfiles.
 
 Bootstrap links shared preferences and CLI application declarations into `~/.config/mise/conf.d/20-dotfiles.toml`,
@@ -120,10 +157,69 @@ Open a new Bash shell for activation. Review existing unmarked mise activation
 lines to avoid duplicate hooks. Desktop language variables are configured for defiant only. Custom XDG config directories are not supported by these target
 paths yet.
 
-## Proton Pass SSH agent (defiant)
+## Proton Drive CLI (opt-in)
 
-Install `pass-cli` at `~/.local/bin/pass-cli` and authenticate/unlock it separately.
-After bootstrap links the service, enable it once per machine:
+After the shared mise config is linked, install the official standalone CLI:
+
+```bash
+mise run proton-drive:install
+proton-drive auth login
+proton-drive filesystem list /my-files
+```
+
+The task pins version 0.8.0, verifies Proton's published SHA-512 checksum, and
+atomically installs `~/.local/bin/proton-drive`. Ensure `~/.local/bin` is on PATH.
+It uses the Linux x86_64 baseline build, which does not require AVX2. Bun is
+embedded; no separate runtime is installed. Bootstrap does not run this task.
+Update the version and checksum together in `config/mise/common.toml` using the
+[official download page](https://proton.me/download/drive/cli/index.html), then
+rerun the task. `mise upgrade` does not update this task-managed binary.
+
+Login is manual and uses the existing, unlocked desktop secret store (`libsecret`
+and GNOME Keyring on defiant). Leave credentials and the CLI's default XDG
+cache/data/log directories outside this repository. The `pass` credential backend
+means password-store/GPG, not Proton Pass. Do not use `unsafe_file`.
+
+This installs a transfer CLI, not a background sync service. Scheduled uploads,
+retention, and restore testing require separate configuration.
+
+## Voyager: Proton Pass and Hugging Face CLI
+
+On Voyager, run:
+
+```bash
+bash bootstrap.sh voyager --dry-run
+bash bootstrap.sh voyager
+export PATH="$HOME/.local/bin:$PATH"
+pass-cli login
+hf auth login
+hf auth whoami
+```
+
+Voyager installs `hf` through pacman's `python-huggingface-hub` package and
+Proton Pass CLI 2.4.1 at `~/.local/bin/pass-cli`. Its bootstrap task installs the
+shared mise applications, then runs `scripts/install-pass-cli.sh`, which verifies
+Proton's published SHA-256 before atomically replacing the binary. An unchanged,
+verified installation is skipped. Keep `~/.local/bin` on PATH. To update Pass,
+change the version and checksum together using Proton's
+[release manifest](https://proton.me/download/pass-cli/versions.json) and rerun
+bootstrap. Pacman updates `hf`.
+
+Authentication is manual; credentials stay outside this repository. Voyager also
+links the Proton Pass SSH agent service and socket environment described below.
+Its desktop remains unmanaged.
+
+## Proton Pass SSH agent (defiant and voyager)
+
+On Defiant, install `pass-cli` at `~/.local/bin/pass-cli` separately; Voyager's
+bootstrap installs it. Authenticate/unlock it manually on either machine.
+Each host also links a `proton-pass-ssh-agent.service.d/vault.conf` override:
+Defiant loads keys only from the `defiant` vault; Voyager only from `voyager`.
+These names are exact. Create the vaults and move the corresponding SSH key
+items into them before starting the services. This filters exposed identities;
+it is not an access boundary if the signed-in account can access both vaults.
+
+After bootstrap links the service and override, enable it once per machine:
 
 ```bash
 pass-cli ssh-agent daemon stop  # only when switching from the old daemon
@@ -133,13 +229,55 @@ ssh-add -l
 ```
 
 The user service starts at login and restarts after failures with a 30-second delay.
-Hyprland and user services use `$XDG_RUNTIME_DIR/proton-pass-agent.sock`; keep any
-shell-level `SSH_AUTH_SOCK` override consistent. Do not also start the CLI daemon.
+Defiant's Hyprland and both hosts' user services use
+`$XDG_RUNTIME_DIR/proton-pass-agent.sock`. Voyager also gets a managed Bash block
+that sets `SSH_AUTH_SOCK`, preserving an existing forwarded agent in SSH sessions.
+Open a new shell after applying; log out and back in for desktop applications to
+inherit the environment. Keep any other shell-level socket overrides consistent.
+Do not also start the CLI daemon.
 Unlocking Pass remains manual; after unlocking, use
 `systemctl --user restart proton-pass-ssh-agent.service` to retry immediately.
 Check service status with `systemctl --user status proton-pass-ssh-agent.service`
 and logs with `journalctl --user -u proton-pass-ssh-agent.service`.
 `pass-cli ssh-agent daemon status` tracks the old daemon, not this systemd service.
+After changing a vault override, run `systemctl --user daemon-reload` and restart
+the service. Verify the local agent explicitly, even inside forwarded SSH sessions:
+
+```bash
+SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/proton-pass-agent.sock" ssh-add -l
+```
+
+## Persistent Herdr server (voyager)
+
+Voyager links `config/systemd/user/herdr.service` through mise. The service starts
+Herdr through mise in a fresh kernel session keyring and links the user's
+persistent keyring. This avoids inheriting an SSH login keyring that
+`pam_keyinit.so force revoke` revokes when the originating connection ends.
+Reconnecting a client cannot repair an already revoked server keyring.
+
+Bootstrap only links the unit. To switch, first finish or stop all work in
+Voyager's Herdr panes. Run the following from a **plain SSH session**, not a
+Herdr pane, and keep Herdr clients disconnected until the service is started:
+
+```bash
+ssh voyager
+herdr server stop  # stops existing panes and agents on Voyager
+systemctl --user daemon-reload
+systemctl --user enable --now herdr.service
+systemctl --user status herdr.service
+```
+
+Reconnect Herdr after the service is running. For persistence beyond the last
+login, enable user lingering with `loginctl enable-linger "$USER"` (already
+enabled on Voyager). Do not run a second Herdr server for the default session.
+Named sessions are not covered by this unit. Stopping/restarting this service
+also stops its panes; schedule such changes rather than doing them in bootstrap.
+Herdr updates that restart or hand off the server need coordination with this
+service; the unit does not implement live handoff.
+
+This does not unlock Proton Pass or persist kernel-held keys across reboot.
+Authenticate Pass manually when needed, then restart its SSH agent service.
+No PAM protections are disabled and no credentials are stored in dotfiles.
 
 ## Tailscale
 
@@ -156,9 +294,9 @@ Run these after bootstrap and follow the sign-in URL from `tailscale up`.
 Authentication state stays outside this repository. Bootstrap does not configure
 exit nodes, subnet routes, or Tailscale SSH.
 
-## Development containers (defiant)
+## Development containers (defiant and voyager)
 
-Defiant declares Docker Engine and the Compose plugin in `mise.defiant.toml`.
+Defiant and Voyager declare Docker Engine and the Compose plugin in their host TOMLs.
 Projects own their `compose.yaml`, image versions, and data; bootstrap only
 installs the machine packages. Docker Desktop is not required.
 

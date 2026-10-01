@@ -1,0 +1,17 @@
+[Unit]
+Description=Herdr persistent server with an SSH-independent keyring
+
+[Service]
+Type=simple
+WorkingDirectory=%h
+# Create a session keyring not owned (and revoked) by SSH's pam_keyinit.
+# Link the UID's persistent ring so Pass credentials are shared with other sessions.
+ExecStart=/usr/bin/keyctl session - /bin/bash -c '/usr/bin/keyctl get_persistent @s > /dev/null && exec /usr/bin/mise exec herdr -- herdr server'
+Restart=on-failure
+RestartSec=5s
+# Stopping the service deliberately stops its panes and agents too.
+KillMode=control-group
+UMask=0077
+
+[Install]
+WantedBy=default.target

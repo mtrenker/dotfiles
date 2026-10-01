@@ -3,6 +3,12 @@
 [[ ${_DOTFILES_BASH_LOADED:-} == 1 ]] && return
 _DOTFILES_BASH_LOADED=1
 
+# User-installed applications, including Proton Pass and Proton Drive.
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
+
 alias ..='cd ..'
 alias ...='cd ../..'
 alias vi='nvim'

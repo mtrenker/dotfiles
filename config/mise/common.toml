@@ -4,6 +4,7 @@
 [tools]
 claude = "latest"
 codex = "latest"
+pi = "latest"
 herdr = "latest"
 gh = "latest"
 
@@ -12,3 +13,40 @@ gh = "latest"
 EDITOR = "nvim"
 PAGER = "less -FRX"
 MANPAGER = "nvim +Man!"
+BROWSER = "firefox"
+
+# Official standalone binary; no Bun runtime or automatic bootstrap install.
+# Update the version and SHA-512 together from Proton's download page.
+[tasks."proton-drive:install"]
+description = "Install Proton Drive CLI 0.8.0 (Linux x86_64, checksum verified)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ $(uname -s) != Linux || $(uname -m) != x86_64 ]]; then
+  echo "This task supports Linux x86_64 only." >&2
+  exit 1
+fi
+version=0.8.0
+# Baseline also supports x86_64 CPUs without AVX2.
+platform=linux-x64-baseline
+sha512=a730f9e420fef69244acb9b12aa8e0c03b8216f5d94ff2181cf3df2859a143fc2693fe201c3a00fddaff5d702c34435af72a5283dbbe1da9e038d77a107e24f3
+mkdir -p "$HOME/.local/bin"
+staging=$(mktemp -d "$HOME/.local/bin/.proton-drive.XXXXXXXX")
+trap 'rm -rf -- "$staging"' EXIT
+curl --fail --location --show-error --silent --proto '=https' --proto-redir '=https' \
+  "https://proton.me/download/drive/cli/$version/$platform/proton-drive" \
+  --output "$staging/proton-drive"
+printf '%s  %s\n' "$sha512" "$staging/proton-drive" | sha512sum --check --status
+chmod 755 "$staging/proton-drive"
+"$staging/proton-drive" version
+# Replace atomically without following an existing destination symlink.
+mv -fT -- "$staging/proton-drive" "$HOME/.local/bin/proton-drive"
+printf 'Installed %s. Sign in with: proton-drive auth login\n' "$HOME/.local/bin/proton-drive"
+'''
+
+[tasks.default-browser]
+description = "Set Firefox as the default browser"
+run = """
+xdg-settings set default-web-browser firefox.desktop
+xdg-mime default firefox.desktop x-scheme-handler/http x-scheme-handler/https text/html
+"""

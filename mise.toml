@@ -79,4 +79,4 @@ bashrc = "activate"
 description = "Install shared CLI applications, not project toolchains"
 # A fresh invocation sees the global fragment linked during the dotfiles phase.
 # Keep this list explicit: bare `mise install` would include unrelated global tools.
-run = "mise install claude codex herdr gh"
+run = "mise install claude codex pi herdr gh"

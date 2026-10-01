@@ -30,7 +30,10 @@ class ShellTests(unittest.TestCase):
             (home / ".bashrc.local").write_text("LOCAL_LOADED=yes\n")
             script = '''
 source "$1"
+[[ $PATH == "$HOME/.local/bin:"* ]] || exit 1
+first_path=$PATH
 source "$1"
+[[ $PATH == "$first_path" ]] || exit 1
 [[ $HOOK_CALLS == 4 && $LOCAL_LOADED == yes ]] || exit 1
 [[ $(alias gs) == "alias gs='git status -sb'" ]] || exit 1
 cd "$HOME"
