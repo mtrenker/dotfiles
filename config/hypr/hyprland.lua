@@ -4,5 +4,3 @@ local hyprDir = configHome .. "/hypr/"
 dofile(hyprDir .. "shared.lua")
 dofile(hyprDir .. "host.lua")
 
--- For Noctalia Color templates
-require("noctalia").apply_theme()
