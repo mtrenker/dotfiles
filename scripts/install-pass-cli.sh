@@ -9,9 +9,13 @@ fi
 version=2.4.1
 sha256=f4188430466e0a3d668b56791a8b430162cb20ceb108fed4fdbfcfe77d3080e6
 target="$HOME/.local/bin/pass-cli"
-# Leave an already verified installation untouched.
-if [[ -f "$target" && -x "$target" ]] && printf '%s  %s\n' "$sha256" "$target" | sha256sum --check --status; then
-  exit 0
+# Bootstrap only installs when missing; pass-cli update owns later upgrades.
+if [[ -e "$target" || -L "$target" ]]; then
+  if [[ -f "$target" && -x "$target" ]]; then
+    exit 0
+  fi
+  printf 'Refusing to replace %s: expected an executable file.\n' "$target" >&2
+  exit 1
 fi
 mkdir -p "$HOME/.local/bin"
 staging=$(mktemp -d "$HOME/.local/bin/.pass-cli.XXXXXXXX")

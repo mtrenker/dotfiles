@@ -76,7 +76,10 @@ bash_profile = "shims"
 bashrc = "activate"
 
 [tasks.bootstrap]
-description = "Install shared CLI applications, not project toolchains"
+description = "Configure pacman and install shared CLI applications, not project toolchains"
 # A fresh invocation sees the global fragment linked during the dotfiles phase.
 # Keep this list explicit: bare `mise install` would include unrelated global tools.
-run = "mise install claude codex pi herdr gh"
+run = [
+  'sudo bash "{{config_root}}/scripts/configure-pacman.sh"',
+  "mise install claude codex pi herdr gh",
+]

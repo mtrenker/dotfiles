@@ -25,8 +25,9 @@ fi
 ''' }
 
 [tasks.bootstrap]
-description = "Install shared CLI applications and Voyager's Proton Pass CLI"
+description = "Configure pacman and install shared CLI applications and Voyager's Proton Pass CLI"
 run = [
+  'sudo bash "{{config_root}}/scripts/configure-pacman.sh"',
   "mise install claude codex pi herdr gh",
   'bash "{{config_root}}/scripts/install-pass-cli.sh"',
 ]

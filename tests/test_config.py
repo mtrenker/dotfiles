@@ -21,10 +21,13 @@ class ConfigTests(unittest.TestCase):
             config = load(name)
             self.assertNotIn("tools", config, name)
             if name == "mise.toml":
-                self.assertEqual(config["tasks"]["bootstrap"]["run"], "mise install claude codex pi herdr gh")
+                self.assertEqual(config["tasks"]["bootstrap"]["run"], [
+                    'sudo bash "{{config_root}}/scripts/configure-pacman.sh"',
+                    "mise install claude codex pi herdr gh",
+                ])
             elif name == "mise.voyager.toml":
                 self.assertEqual(config["tasks"]["bootstrap"]["run"], [
-                    load("mise.toml")["tasks"]["bootstrap"]["run"],
+                    *load("mise.toml")["tasks"]["bootstrap"]["run"],
                     'bash "{{config_root}}/scripts/install-pass-cli.sh"',
                 ])
             else:
@@ -51,7 +54,7 @@ class ConfigTests(unittest.TestCase):
         self.assertRegex(script, r"sha512=[0-9a-f]{128}\n")
         self.assertLess(script.index("sha512sum --check"), script.index("chmod 755"))
         self.assertIn("mv -fT", script)
-        self.assertNotIn("proton-drive", load("mise.toml")["tasks"]["bootstrap"]["run"])
+        self.assertNotIn("proton-drive", "\n".join(load("mise.toml")["tasks"]["bootstrap"]["run"]))
 
     def test_pass_cli_installer(self):
         script = (ROOT / "scripts/install-pass-cli.sh").read_text()
@@ -61,7 +64,34 @@ class ConfigTests(unittest.TestCase):
         self.assertLess(script.index('"$staging/pass-cli" | sha256sum --check'),
                         script.index("chmod 755"))
         self.assertIn("mv -fT", script)
-        self.assertNotIn("pass-cli", load("mise.toml")["tasks"]["bootstrap"]["run"])
+        self.assertNotIn("pass-cli", "\n".join(load("mise.toml")["tasks"]["bootstrap"]["run"]))
+
+    def test_pass_cli_installer_preserves_existing_installation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = pathlib.Path(directory)
+            target = home / ".local/bin/pass-cli"
+            target.parent.mkdir(parents=True)
+            target.write_text("#!/bin/sh\necho 'newer self-updated version'\n")
+            # Prevent network access and detect any attempted reinstall.
+            bin_dir = home / "bin"
+            bin_dir.mkdir()
+            curl = bin_dir / "curl"
+            curl.write_text("#!/bin/sh\necho 'unexpected download' >&2\nexit 99\n")
+            curl.chmod(0o755)
+            env = dict(os.environ, HOME=str(home), PATH=f"{bin_dir}:{os.environ['PATH']}")
+            for mode, expected_code in ((0o755, 0), (0o644, 1)):
+                with self.subTest(mode=mode):
+                    target.chmod(mode)
+                    before = target.read_bytes(), target.stat()
+                    result = subprocess.run(
+                        ["bash", str(ROOT / "scripts/install-pass-cli.sh")],
+                        env=env, text=True, capture_output=True,
+                    )
+                    self.assertEqual(result.returncode, expected_code, result.stderr)
+                    self.assertNotIn("unexpected download", result.stderr)
+                    self.assertEqual(target.read_bytes(), before[0])
+                    self.assertEqual(target.stat().st_ino, before[1].st_ino)
+                    self.assertEqual(target.stat().st_mtime_ns, before[1].st_mtime_ns)
 
     def test_host_composition_and_sources(self):
         base = load("mise.toml")

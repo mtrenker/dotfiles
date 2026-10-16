@@ -141,8 +141,8 @@ fragment. Remove only conflicting idle overrides there if the managed policy
 stops taking effect; do not delete unrelated settings.
 
 The wrapper requires an explicit host and runs `mise bootstrap --skip tools`.
-The repo's bootstrap task then runs only `mise install claude codex pi herdr gh`, after linking
-the shared global config. This avoids a broad install of unrelated personal tools.
+The repo's bootstrap task configures the pacman preference described below, then
+runs `mise install claude codex pi herdr gh`, after linking the shared global config. This avoids a broad install of unrelated personal tools.
 Claude Code, Codex, Pi, Herdr, and GitHub CLI use mise's aqua backends without requiring Node/npm; btop
 comes from pacman. Authentication is separate: launch `claude` or `codex` and
 follow its login flow, launch `pi` and use `/login`, or run `gh auth login` for GitHub CLI. Update these apps explicitly with `mise upgrade claude codex pi herdr gh`. It does not install Nix, reset Git changes,
@@ -156,6 +156,20 @@ in the managed fragment.
 Open a new Bash shell for activation. Review existing unmarked mise activation
 lines to avoid duplicate hooks. Desktop language variables are configured for defiant only. Custom XDG config directories are not supported by these target
 paths yet.
+
+## Pacman preferences (all hosts)
+
+Bootstrap runs `scripts/configure-pacman.sh` with sudo to enable `ILoveCandy`
+under `[options]` in `/etc/pacman.conf`. It preserves other settings and repository
+definitions, and leaves an already-enabled configuration untouched. Before a change,
+it saves the previous file to `/etc/pacman.conf.dotfiles.bak`. Bootstrap's
+`--dry-run` does not run this step.
+
+Apply only this preference without running the rest of bootstrap:
+
+```bash
+sudo bash scripts/configure-pacman.sh
+```
 
 ## Proton Drive CLI (opt-in)
 
@@ -197,13 +211,17 @@ hf auth whoami
 ```
 
 Voyager installs `hf` through pacman's `python-huggingface-hub` package and
-Proton Pass CLI 2.4.1 at `~/.local/bin/pass-cli`. Its bootstrap task installs the
-shared mise applications, then runs `scripts/install-pass-cli.sh`, which verifies
-Proton's published SHA-256 before atomically replacing the binary. An unchanged,
-verified installation is skipped. Keep `~/.local/bin` on PATH. To update Pass,
-change the version and checksum together using Proton's
-[release manifest](https://proton.me/download/pass-cli/versions.json) and rerun
-bootstrap. Pacman updates `hf`.
+Proton Pass CLI at `~/.local/bin/pass-cli`. Its bootstrap task installs the
+shared mise applications, then runs `scripts/install-pass-cli.sh`. On first install,
+this downloads version 2.4.1 and verifies Proton's published SHA-256 before
+atomically installing the binary. Existing executable installations are left
+untouched, including self-updated versions; an existing non-executable target
+causes an error rather than being overwritten. Keep `~/.local/bin` on PATH.
+Update Pass with `pass-cli update` (no sudo); bootstrap will not downgrade it.
+The version and checksum in the script only control fresh installations and should
+be changed together using Proton's
+[release manifest](https://proton.me/download/pass-cli/versions.json).
+Pacman updates `hf`.
 
 Authentication is manual; credentials stay outside this repository. Voyager also
 links the Proton Pass SSH agent service and socket environment described below.
